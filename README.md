@@ -17,3 +17,9 @@ To compile code:
 ```
 yarn hardhat compile
 ```
+
+Run Mock by this command:
+
+```
+yarn hardhat deploy --tags mocks
+```

@@ -3,7 +3,10 @@
 // }
 
 const { network } = require("hardhat");
-const { networkConfig } = require("../helper-hardhat-config");
+const {
+    networkConfig,
+    developmentChains,
+} = require("../helper-hardhat-config");
 
 // module.exports.default = deplyfunc;
 
@@ -14,11 +17,24 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     const { deployer } = await getNamedAccounts();
     const chainId = network.config.chainId;
 
-    const ethUsdPriceFeedAddress = networkConfig[chainId]["ethUsdPriceFeed"];
+    // const ethUsdPriceFeedAddress = networkConfig[chainId]["ethUsdPriceFeed"];
+
+    let ethUsdPriceFeedAddress;
+    if (developmentChains.includes(network.name)) {
+        // if we want to deploy on local host.
+        const ethUsdAggregator = await deployments.get("MockV3Aggregator");
+        ethUsdPriceFeedAddress = ethUsdAggregator.address;
+    } else {
+        ethUsdPriceFeedAddress = networkConfig[chainId]["ethUsdPriceFeed"];
+    }
+
+    const fundMe = await deploy("FundMe", {
+        from: deployer,
+        args: [ethUsdPriceFeedAddress], // put price feed address
+        log: true,
+    });
+
+    log("-------------------------------------------------------------");
 };
 
-// const fundMe = await deploy("FundMe", {
-//     from: deployer,
-//     args: [address], // put price feed address
-//     log: true,
-// });
+module.exports.tags = ["all", "fundme"];
