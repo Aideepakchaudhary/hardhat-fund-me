@@ -16,6 +16,7 @@ module.exports = {
             url: SEPOLIA_RPC_URL,
             accounts: [PRIVATE_KEY],
             chainId: 11155111,
+            blockConfirmation: 6,
         },
         localhost: {
             url: "http://127.0.0.1:8545/",
