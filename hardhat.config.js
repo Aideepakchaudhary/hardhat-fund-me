@@ -2,6 +2,9 @@ require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 require("hardhat-gas-reporter");
 require("hardhat-deploy");
+// require("@nomiclabs/hardhat-waffle");
+require("solidity-coverage");
+
 // require("@nomiclabs/hardhat-etherscan");
 
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL;

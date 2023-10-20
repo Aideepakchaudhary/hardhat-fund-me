@@ -23,3 +23,9 @@ Run Mock by this command:
 ```
 yarn hardhat deploy --tags mocks
 ```
+
+Run test by this command:
+
+```
+yarn hardhat test ./test/unit/FundMe.test.js
+```
