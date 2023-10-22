@@ -66,11 +66,12 @@ describe("FundMe", async function () {
             );
             // Act
 
-            let transactionResponse = await fundMe.withraw();
-            const transactionReceipt = await transactionResponse.wait(1);
-            const { gasUsed, effectiveGasPrice } = transactionReceipt;
+            const transactionResponse = await fundMe.withdraw();
 
-            const gasCost = gasUsed.mul(effectiveGasPrice);
+            const transactionReceipt = await transactionResponse.wait(1);
+            const { gasUsed, gasPrice } = transactionReceipt;
+
+            const gasCost = gasUsed * gasPrice;
 
             const endingFundMeBalance = await ethers.provider.getBalance(
                 fundMe.getAddress()
@@ -83,10 +84,10 @@ describe("FundMe", async function () {
             // gasCost
 
             // Assert
-            assert(endingFundMeBalance, 0);
-            assert(
-                startingDeployerBalance.add(startingDeployerBalance).toString(),
-                endingDeployerBalance.add(gasCost).toString()
+            assert.equal(endingFundMeBalance, 0);
+            assert.equal(
+                (startingFundMeBalance + startingDeployerBalance).toString(),
+                (endingDeployerBalance + gasCost).toString()
             );
         });
     });
