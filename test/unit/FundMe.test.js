@@ -90,5 +90,57 @@ describe("FundMe", async function () {
                 (endingDeployerBalance + gasCost).toString()
             );
         });
+
+        it("allows us to withdraw with multiple funders", async function () {
+            // Arrange
+
+            const accounts = await ethers.getSigners();
+            for (let i = 1; i < 6; i++) {
+                const fundMeConnectedContract = await fundMe.connect(
+                    accounts[i]
+                );
+                await fundMeConnectedContract.fund({ value: sendValue });
+            }
+
+            const startingFundMeBalance = await ethers.provider.getBalance(
+                fundMe.getAddress()
+            );
+            const startingDeployerBalance = await ethers.provider.getBalance(
+                deployer.address
+            );
+
+            // Act
+            const transactionResponse = await fundMe.withdraw();
+
+            const transactionReceipt = await transactionResponse.wait(1);
+            const { gasUsed, gasPrice } = transactionReceipt;
+
+            const gasCost = gasUsed * gasPrice;
+
+            // Assert
+            const endingFundMeBalance = await ethers.provider.getBalance(
+                fundMe.getAddress()
+            );
+
+            const endingDeployerBalance = await ethers.provider.getBalance(
+                deployer.address
+            );
+
+            assert.equal(endingFundMeBalance, 0);
+            assert.equal(
+                startingDeployerBalance + startingFundMeBalance,
+                endingDeployerBalance + gasCost
+            );
+
+            // Make sure that the funders are reset properly
+            // await expect(fundMe.funders(0)).to.be.reverted;
+
+            // for (i = 1; i < 6; i++) {
+            //     assert.equal(
+            //         await fundMe.addressToAmountFunded(accounts[i].address),
+            //         0
+            //     );
+            // }
+        });
     });
 });
